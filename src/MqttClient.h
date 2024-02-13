@@ -19,7 +19,7 @@
 #include <stdarg.h>
 /* Internal Includes */
 #include "MQTTPacket/MQTTPacket.h"
-
+#include <functional>
 
 #define MQTT_LOG_SIZE_MAX								128
 
@@ -229,7 +229,7 @@ public:
 		Message											&message;
 	};
 
-	typedef void (*MessageHandlerCbk)(MessageData&);
+	typedef std::function<void(MessageData&)> MessageHandlerCbk;
 
 	struct MessageHandler {
 		const char										*topic = NULL;
@@ -626,6 +626,7 @@ public:
 		Timer timer(mSystem, mOptions.commandTimeoutMs);
 		MQTT_LOG_PRINTFLN("Subscribe, to: %s, qos: %u", topic, qos);
 		if (!isConnected()) {
+			MQTT_LOG_PRINTFLN("Can't subscribe if disconnected");
 			return Error::FAILURE;
 		}
 		// Set handler
